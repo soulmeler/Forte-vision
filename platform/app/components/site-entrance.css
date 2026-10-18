@@ -1,0 +1,31 @@
+.site-entrance{position:fixed;inset:0;z-index:90;display:grid;place-items:center;overflow:hidden;background:var(--bg);pointer-events:none;animation:entrance-veil 1.05s cubic-bezier(.22,1,.36,1) both}
+.entrance-halo{position:absolute;width:min(760px,110vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 7%,transparent),transparent 64%);animation:entrance-halo 1.05s ease-out both}
+.entrance-signature{position:relative;display:flex;flex-direction:column;align-items:center;padding:40px 46px;animation:entrance-signature .85s cubic-bezier(.22,1,.36,1) both}
+.entrance-wordmark{display:flex;align-items:center;gap:21px;height:42px}
+.entrance-wordmark img{width:118px;height:auto;display:block}
+.entrance-wordmark>span{height:27px;width:1px;background:var(--border)}
+.entrance-wordmark strong{font-size:28px;letter-spacing:-1.1px;font-weight:550;color:var(--text)}
+.entrance-caption{margin-top:19px;font-size:10px;letter-spacing:2.1px;text-transform:uppercase;color:var(--muted)}
+.entrance-focus{position:absolute;inset:0;animation:entrance-focus .85s cubic-bezier(.22,1,.36,1) both}
+.entrance-focus i{position:absolute;width:14px;height:14px;border-color:var(--accent);border-style:solid;border-width:0;opacity:.48}
+.entrance-focus i:nth-child(1){left:0;top:0;border-left-width:1px;border-top-width:1px;border-top-left-radius:4px}
+.entrance-focus i:nth-child(2){right:0;top:0;border-right-width:1px;border-top-width:1px;border-top-right-radius:4px}
+.entrance-focus i:nth-child(3){right:0;bottom:0;border-right-width:1px;border-bottom-width:1px;border-bottom-right-radius:4px}
+.entrance-focus i:nth-child(4){left:0;bottom:0;border-left-width:1px;border-bottom-width:1px;border-bottom-left-radius:4px}
+.entrance-trace{position:absolute;bottom:18px;width:94px;height:1px;overflow:hidden;background:var(--border)}
+.entrance-trace span{display:block;width:38px;height:1px;background:var(--accent);animation:entrance-trace .8s cubic-bezier(.45,0,.2,1) both}
+.app-shell.is-arriving .sidebar-header,.app-shell.is-arriving .sidebar-scroll,.app-shell.is-arriving .sidebar-footer{animation:entrance-nav .65s .25s both}
+.app-shell.is-arriving .topbar{animation:entrance-content .65s .28s both}
+.app-shell.is-arriving .page-heading>div,.app-shell.is-arriving .learning-center>.lc-intro{animation:entrance-content .65s .34s both}
+.app-shell.is-arriving .source-strip{animation:entrance-content .65s .39s both}
+.app-shell.is-arriving .workspace-grid,.app-shell.is-arriving .learning-center>.lc-steps{animation:entrance-content .65s .44s both}
+@keyframes entrance-veil{0%,35%{opacity:1}85%,100%{opacity:0}}
+@keyframes entrance-signature{0%{opacity:0;transform:translateY(8px) scale(.97)}25%,65%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-8px) scale(1.015)}}
+@keyframes entrance-focus{0%{transform:scale(1.12);opacity:0}35%,60%{transform:scale(1);opacity:1}100%{transform:scale(.98);opacity:0}}
+@keyframes entrance-halo{from{opacity:0;transform:scale(.8)}50%{opacity:1}to{opacity:0;transform:scale(1.2)}}
+@keyframes entrance-trace{0%{transform:translateX(-40px)}100%{transform:translateX(100px)}}
+@keyframes entrance-nav{from{opacity:0}to{opacity:1}}
+@keyframes entrance-content{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:600px){.entrance-signature{padding:34px}.entrance-wordmark img{width:105px}.entrance-wordmark strong{font-size:25px}.entrance-caption{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.site-entrance{display:none}.app-shell.is-arriving :is(.sidebar-header,.sidebar-scroll,.sidebar-footer,.topbar,.page-heading>div,.source-strip,.workspace-grid,.lc-intro,.lc-steps){animation:none}}
+:root[data-motion='reduced'] .site-entrance{display:none}

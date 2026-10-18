@@ -1,0 +1,34 @@
+.upload-sculpture{--sculpture-pointer-x:0deg;--sculpture-pointer-y:0deg;position:relative;isolation:isolate;width:100%;height:var(--upload-sculpture-height,clamp(220px,20vw,310px));min-height:180px;overflow:hidden;border-radius:16px;background:transparent;touch-action:pan-y;contain:layout paint}
+.upload-sculpture--compact{height:var(--upload-sculpture-compact-height,190px);min-height:150px}
+.upload-sculpture__ambient{position:absolute;z-index:-1;width:69%;height:74%;left:15.5%;top:11%;background:radial-gradient(ellipse,color-mix(in srgb,#FC9385 14%,transparent) 0%,color-mix(in srgb,#61CFFF 6%,transparent) 44%,transparent 72%);opacity:.85;pointer-events:none;transition:opacity .45s ease,transform .65s ease}
+.upload-sculpture[data-active='true'] .upload-sculpture__ambient{opacity:1;transform:scale(1.12)}
+.upload-sculpture__canvas{position:absolute;inset:0;opacity:0;transition:opacity .6s ease;pointer-events:none}
+.upload-sculpture__canvas canvas{display:block;width:100%;height:100%;background:transparent;outline:none}
+.upload-sculpture--webgl .upload-sculpture__canvas{opacity:1}
+.upload-sculpture__fallback{position:absolute;inset:0;display:grid;place-items:center;perspective:750px;opacity:1;transition:opacity .35s ease;pointer-events:none}
+.upload-sculpture--webgl .upload-sculpture__fallback{opacity:0;visibility:hidden}
+.upload-sculpture__fallback-model{position:relative;width:190px;height:190px;transform-style:preserve-3d;transform:rotateX(calc(-9deg + var(--sculpture-pointer-y))) rotateY(calc(-21deg + var(--sculpture-pointer-x))) rotateZ(-9deg);transition:transform .5s cubic-bezier(.2,.8,.2,1);animation:upload-sculpture-float 6s ease-in-out infinite}
+.upload-sculpture__fallback-ring{position:absolute;inset:9px;border-radius:50%;border:26px solid transparent;background:linear-gradient(125deg,#fff9,#fff0 37%,#61CFFF55 73%,#fff7) border-box,conic-gradient(from 10deg,#A31551 0deg,#4A0221 95deg,#FC9385 128deg,#fcc5bd 190deg,#b6eeff 225deg,#61CFFF 276deg,#A31551 322deg) border-box;mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);mask-composite:exclude;box-shadow:inset 0 3px 7px #fff9,0 15px 20px #4a02212b;transform:translateZ(-5px)}
+.upload-sculpture__fallback-ring:after{content:'';position:absolute;inset:-22px;border:1px solid #fff8;border-radius:50%;box-shadow:0 3px 3px #4a02212b}
+.upload-sculpture__fallback-orbit{position:absolute;inset:-9px;border:1px solid #61CFFF7a;border-radius:50%;transform:rotateX(19deg) rotateY(-8deg) translateZ(-9px)}
+.upload-sculpture__fallback-progress{position:absolute;inset:-10px;border-radius:50%;padding:3px;background:conic-gradient(#61CFFF calc(var(--sculpture-progress)*1%),transparent 0);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;transform:translateZ(3px);opacity:0;transition:opacity .3s ease}.upload-sculpture[data-progress='true'] .upload-sculpture__fallback-progress{opacity:1}
+.upload-sculpture__fallback-tile{position:absolute;width:72px;height:99px;left:59px;top:46px;border:6px solid #c8f0ff9c;border-radius:13px;background:linear-gradient(135deg,#762845,#4A0221 50%,#8c1649);box-shadow:inset 1px 1px 1px #fff6,5px 7px 0 #4a02213d,9px 12px 17px #4a022126;transform:translateZ(25px) rotateZ(5deg)}
+.upload-sculpture__fallback-tile:after{content:'';position:absolute;left:6px;right:6px;top:22px;bottom:8px;border-radius:6px;background:linear-gradient(145deg,#bb2b66,#A31551);box-shadow:inset 1px 1px 1px #fc938544}
+.upload-sculpture__fallback-perforations{position:absolute;left:8px;top:9px;width:6px;height:3px;border-radius:2px;background:#ffeee9;box-shadow:11px 0 #ffeee9,22px 0 #ffeee9;z-index:2}
+.upload-sculpture__fallback-arrow{position:absolute;left:27px;top:35px;width:6px;height:26px;border-radius:3px;background:linear-gradient(90deg,#ffd0c8,#FC9385);z-index:3;box-shadow:1px 2px 2px #4a022166}
+.upload-sculpture__fallback-arrow:before,.upload-sculpture__fallback-arrow:after{content:'';position:absolute;top:0;width:6px;height:17px;background:#FC9385;border-radius:3px;transform-origin:center 3px;box-shadow:inset 1px 0 #ffdfd8}
+.upload-sculpture__fallback-arrow:before{transform:rotate(45deg);left:0}.upload-sculpture__fallback-arrow:after{transform:rotate(-45deg);right:0}
+.upload-sculpture__fallback-tray{position:absolute;z-index:3;left:17px;top:64px;width:26px;height:10px;border:4px solid #ffeee9;border-top:0;border-radius:0 0 5px 5px;filter:drop-shadow(1px 2px 1px #4a022166)}
+.upload-sculpture__fallback-pearl{position:absolute;left:185px;top:63px;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 30% 25%,#e6faff,#61CFFF 49%,#237ca6);box-shadow:2px 3px 6px #07315033;transform:translateZ(20px)}
+.upload-sculpture__fallback-shadow{position:absolute;left:50%;top:80%;width:140px;height:18px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,#4a022126,transparent 70%);filter:blur(5px)}
+.upload-sculpture[data-active='true'] .upload-sculpture__fallback-tile{box-shadow:inset 1px 1px 1px #fff6,5px 7px 0 #4a02213d,9px 12px 22px #a3155133}
+.upload-sculpture--compact .upload-sculpture__fallback-model{scale:.82}
+.upload-sculpture[data-reduced='true'] .upload-sculpture__fallback-model,.upload-sculpture[data-paused='true'] .upload-sculpture__fallback-model{animation:none}
+.upload-sculpture[data-reduced='true'] *{transition:none!important}
+@keyframes upload-sculpture-float{0%,100%{translate:0 3px}50%{translate:0 -5px}}
+@media(max-width:600px){.upload-sculpture{height:var(--upload-sculpture-height,235px)}.upload-sculpture--compact{height:var(--upload-sculpture-compact-height,180px)}}
+@media(prefers-reduced-motion:reduce){.upload-sculpture *{animation:none!important;transition:none!important}}
+
+.upload-sculpture--fallback .upload-sculpture__fallback-ring{animation:upload-sculpture-ring-turn 55s linear infinite}
+.upload-sculpture[data-reduced='true'] .upload-sculpture__fallback-ring,.upload-sculpture[data-paused='true'] .upload-sculpture__fallback-ring{animation-play-state:paused}
+@keyframes upload-sculpture-ring-turn{to{transform:translateZ(-5px) rotate(360deg)}}

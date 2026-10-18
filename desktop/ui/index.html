@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; connect-src 'self' http://127.0.0.1:* http://localhost:* http://[::1]:* https://localhost:* https://127.0.0.1:*; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>vision-forte — Проверка видео</title>
+  <link rel="stylesheet" href="styles.css"><script type="module" src="app.js"></script>
+</head>
+<body>
+<svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+<symbol id="i-scan" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5M7 12h10M12 7v10"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6Z"/><path d="m8 12 3 3 5-6"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+<symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4m-4 6h4"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H5v18h14V8Zm0 0v5h5M8 13h8m-8 4h6"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24"><path d="m12 3 10 18H2ZM12 9v5m0 3v1"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="m10 13 4-4m-6 7-1 1a4 4 0 0 1-6-6l5-5a4 4 0 0 1 6 0m0 12a4 4 0 0 0 6 0l5-5a4 4 0 0 0-6-6l-1 1"/></symbol>
+</defs></svg>
+<div class="titlebar"><span>vision-forte</span><span class="titlebar-right">Рабочее пространство</span></div>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="#" aria-label="vision-forte, главная"><span class="brand-name">vision-forte</span><small>Контроль кассовых операций</small></a>
+    <div class="workspace-label">Рабочее пространство</div>
+    <nav aria-label="Главное меню">
+      <button id="nav-analysis" class="nav-item active" aria-current="page"><svg><use href="#i-grid"/></svg>Проверка видео<span class="nav-line"></span></button>
+      <button id="nav-settings" class="nav-item"><svg><use href="#i-settings"/></svg>Подключение</button>
+    </nav>
+    <div class="sidebar-bottom"><button id="help-button" class="nav-item"><svg><use href="#i-info"/></svg>Как это работает</button><div class="local-card"><div class="local-icon"><svg><use href="#i-shield"/></svg></div><div><strong>Локальная обработка</strong><span>Видео остаются у вас</span></div></div></div>
+  </aside>
+  <main>
+    <header class="topbar"><div class="breadcrumb">Рабочее пространство <span>/</span> <strong>Проверка видео</strong></div><button id="mode-badge" class="connection-badge"><span class="status-dot"></span><span id="mode-text">Демо-режим</span><svg><use href="#i-settings"/></svg></button></header>
+<section class="page-heading"><h1>Проверка видео</h1><p>Загрузите запись кассовой операции для проверки.</p></section>
+    <div id="demo-notice" class="demo-notice"><span class="demo-pill">ДЕМО</span><span>Модель не подключена. Доступен демонстрационный пример.</span><button id="connect-shortcut">Настроить подключение</button></div>
+    <div id="error-banner" class="error-banner" role="alert" hidden><svg><use href="#i-alert"/></svg><span id="error-text"></span><button id="dismiss-error" class="icon-button" aria-label="Скрыть сообщение"><svg><use href="#i-close"/></svg></button></div>
+    <section class="review-grid">
+      <div class="video-column">
+        <div class="panel video-panel">
+          <div class="panel-heading"><div><h2>Видеозапись</h2></div><span id="video-tag" class="quiet-tag">Новая проверка</span></div>
+          <div id="dropzone" class="dropzone">
+            <div class="upload-icon" aria-hidden="true"><svg><use href="#i-upload"/></svg></div>
+            <h3>Добавьте видеозапись</h3><p>Перетащите файл в эту область или выберите его на компьютере</p>
+            <button id="choose-file" class="button primary"><svg><use href="#i-upload"/></svg>Выбрать видео</button><span class="file-hint">MOV, MP4, WEBM · до 300 МБ</span>
+          </div>
+          <div id="player-area" class="player-area" hidden><div class="player-stage"><video id="video" controls playsinline preload="metadata" hidden></video><img id="demo-scene" src="scene.svg" alt="Схематичная иллюстрация кассового места для демонстрации интерфейса" hidden><span id="illustration-badge" class="illustration-badge" hidden>Иллюстрация · не запись камеры</span></div><div class="player-file"><span class="file-icon"><svg><use href="#i-film"/></svg></span><div><strong id="file-name"></strong><span id="file-meta"></span></div><button id="replace-file" class="icon-button" aria-label="Заменить видео" title="Заменить видео"><svg><use href="#i-upload"/></svg></button></div><div id="timeline" class="timeline" aria-label="Отметки событий"></div></div>
+          <input id="file-input" type="file" accept=".mov,.mp4,.webm,video/quicktime,video/mp4,video/webm" hidden>
+          <div class="panel-footer"><svg><use href="#i-shield"/></svg><span id="privacy-text">Файл обрабатывается на вашем компьютере</span></div>
+        </div>
+        <div class="action-row"><button id="demo-button" class="button secondary"><svg><use href="#i-play"/></svg>Посмотреть пример</button><button id="analyze-button" class="button dark" disabled>Запустить демо <svg><use href="#i-arrow"/></svg></button><button id="cancel-button" class="button secondary" hidden>Остановить ожидание</button></div>
+        <div id="progress-area" class="progress-area" hidden aria-live="polite"><div><span class="spinner"></span><strong id="progress-title">Подготовка видео</strong><span id="elapsed">00:00</span></div><div class="progress-track"><span></span></div><p id="progress-note">Подготавливаем демонстрацию интерфейса.</p></div>
+      </div>
+      <div class="panel results-panel">
+        <div class="panel-heading"><div><h2>Результат проверки</h2></div><span id="result-count" class="count-badge">—</span></div>
+        <div id="results-empty" class="results-empty"><svg aria-hidden="true"><use href="#i-file"/></svg><h3>Нет результатов</h3><p>После проверки здесь появятся события,<br>таймкоды и кадры для просмотра.</p></div>
+        <div id="results-content" class="results-content" hidden><div id="verdict" class="verdict"></div><div id="events-list" class="events-list"></div><div id="event-detail" class="event-detail" hidden><div class="detail-label">ЧТО ВИДНО НА ВИДЕО</div><p id="event-description"></p><div class="detail-label evidence-label">КАДРЫ-ДОКАЗАТЕЛЬСТВА <span id="evidence-count"></span></div><div id="evidence-grid" class="evidence-grid"></div><div id="rule-card" class="rule-card"></div></div><div class="review-note"><svg><use href="#i-info"/></svg><span>Результат помогает проверяющему. Окончательное решение принимает человек.</span></div></div>
+      </div>
+    </section>
+<footer class="page-footer"><span>vision-forte</span><span>Контроль кассовых операций · ForteBank</span></footer>
+  </main>
+</div>
+<dialog id="settings-dialog" aria-labelledby="settings-title"><form id="settings-form"><div class="dialog-heading"><div><span class="eyebrow">РАБОЧЕЕ ОКРУЖЕНИЕ</span><h2 id="settings-title">Подключение модели</h2></div><button type="button" class="icon-button close-dialog" aria-label="Закрыть настройки"><svg><use href="#i-close"/></svg></button></div><p class="dialog-intro">Выберите демонстрацию интерфейса или подключите локальный сервис анализа.</p><div class="mode-options"><label><input type="radio" name="mode" value="demo" checked><span><strong>Демо-режим</strong><small>Пример событий. Видео не анализируется.</small></span></label><label><input type="radio" name="mode" value="api"><span><strong>Локальный API</strong><small>Анализ загруженной видеозаписи.</small></span></label></div><label class="field">Адрес сервиса<input id="api-url" type="url" value="http://127.0.0.1:8000" spellcheck="false" autocomplete="off"></label><label class="field">API-ключ<input id="api-key" type="password" placeholder="Ключ доступа к сервису" autocomplete="off"><small>Ключ хранится только до закрытия приложения.</small></label><p id="settings-error" class="form-error" role="alert"></p><div class="api-contract"><code>POST /api/v1/analyze</code><code>GET /api/v1/jobs/{job_id}</code><span>Авторизация: X-API-Key · ожидание до 5 минут</span></div><div class="dialog-footer"><button type="button" class="button secondary close-dialog">Отмена</button><button type="submit" class="button primary">Сохранить настройки</button></div></form></dialog>
+<dialog id="help-dialog" aria-labelledby="help-title"><div class="dialog-heading"><div><span class="eyebrow">НАЧАЛО РАБОТЫ</span><h2 id="help-title">Как проверить видео</h2></div><button class="icon-button close-dialog" aria-label="Закрыть справку"><svg><use href="#i-close"/></svg></button></div><ol class="help-steps"><li><strong>Выберите запись</strong><p>Загрузите MOV, MP4 или WEBM. Просматривайте видео прямо в рабочем пространстве.</p></li><li><strong>Запустите проверку</strong><p>В демо показывается учебный сценарий. Для реального анализа выберите «Локальный API» в настройках.</p></li><li><strong>Разберите результат</strong><p>Нажмите на событие, чтобы перейти к таймкоду. Откройте кадр крупнее и проверьте основание.</p></li></ol><div class="help-note">Остановка ожидания не отменяет уже запущенную задачу на сервере.</div></dialog>
+<dialog id="evidence-dialog" aria-labelledby="evidence-title"><div class="dialog-heading"><h2 id="evidence-title">Кадр-доказательство</h2><button class="icon-button close-dialog" aria-label="Закрыть кадр"><svg><use href="#i-close"/></svg></button></div><img id="evidence-large" alt="Кадр-доказательство"><p id="evidence-caption"></p></dialog>
+<div id="toast" class="toast" role="status" hidden></div>
+</body></html>

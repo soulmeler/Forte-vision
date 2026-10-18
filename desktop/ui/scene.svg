@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540">
+<defs><pattern id="floor" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="#e1e1e1"/><path d="M100 0H0v100" fill="none" stroke="#d3d3d3"/></pattern><filter id="shadow"><feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#5b5b5b" flood-opacity=".12"/></filter></defs>
+<rect width="900" height="540" fill="url(#floor)"/><path d="M0 70h900" stroke="#cfcfcf" stroke-width="12"/>
+<g filter="url(#shadow)"><rect x="140" y="145" width="620" height="247" rx="18" fill="#bdbdbd"/><rect x="145" y="140" width="610" height="235" rx="16" fill="#f2f2f2"/></g>
+<path d="M158 157h584" stroke="#fdfdfd" stroke-width="4"/>
+<rect x="285" y="174" width="148" height="94" rx="6" fill="#717171"/><rect x="294" y="182" width="130" height="76" rx="3" fill="#bfbfbf"/><path d="M310 201h57m-57 11h95m-95 11h76" stroke="#dedede" stroke-width="4"/><path d="M359 268v17m-28 0h56" stroke="#969696" stroke-width="8" stroke-linecap="round"/>
+<rect x="285" y="295" width="153" height="41" rx="5" fill="#dedede"/><g stroke="#bebebe" stroke-width="3"><path d="M296 305h129m-129 9h129m-129 9h129"/><path d="M307 300v30m14-30v30m14-30v30m14-30v30m14-30v30m14-30v30m14-30v30m14-30v30"/></g>
+<rect x="482" y="183" width="86" height="119" rx="3" fill="#d7d7d7" transform="rotate(8 525 242)"/><rect x="490" y="177" width="86" height="119" rx="3" fill="#fdfdfd" transform="rotate(8 533 236)"/><path d="m507 202 50 7m-52 5 48 7m-51 6 34 5" stroke="#cbcbcb" stroke-width="3"/>
+<rect x="609" y="238" width="77" height="49" rx="6" fill="#dfdfdf"/><rect x="616" y="244" width="63" height="20" rx="3" fill="#919191"/><path d="M625 252h44" stroke="#cdcdcd" stroke-width="2"/>
+<rect x="504" y="320" width="77" height="30" rx="3" fill="#c8c8c8" transform="rotate(-8 542 335)"/><rect x="512" y="315" width="69" height="29" rx="2" fill="#dfdfdf" transform="rotate(-8 546 330)"/><circle cx="545" cy="330" r="8" fill="none" stroke="#b3b3b3" stroke-width="2"/>
+<path d="M180 107v276m534-276v276" stroke="#c6c6c6" stroke-width="5"/><path d="M180 107h534" stroke="#c6c6c6" stroke-width="4"/>
+<rect x="310" y="421" width="145" height="93" rx="36" fill="#b7b7b7"/><rect x="326" y="428" width="113" height="70" rx="26" fill="#838383"/><ellipse cx="385" cy="416" rx="48" ry="35" fill="#969696"/><circle cx="386" cy="406" r="24" fill="#c0c0c0"/>
+<path d="M350 417q-35-15-24-65m87 64q42-7 57-57" stroke="#969696" stroke-width="24" fill="none" stroke-linecap="round"/><circle cx="328" cy="350" r="10" fill="#c0c0c0"/><circle cx="472" cy="356" r="10" fill="#c0c0c0"/>
+<rect x="501" y="310" width="89" height="43" rx="5" fill="none" stroke="#952650" stroke-width="2" stroke-dasharray="5 4"/>
+<g font-family="Arial,sans-serif" fill="#7c7c7c"><text x="35" y="37" font-size="11" letter-spacing="3">VISION-FORTE / DEMO SCENE</text><text x="685" y="510" font-size="10" letter-spacing="2">ILLUSTRATION ONLY</text></g><path d="M20 70V55h15M880 70V55h-15M20 478v15h15m845-15v15h-15" stroke="#999999" stroke-width="2" fill="none"/>
+</svg>

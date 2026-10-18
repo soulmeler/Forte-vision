@@ -1,0 +1,77 @@
+name: Desktop installers
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            command: dist:mac
+            artifact: mac-arm64
+          - os: macos-15-intel
+            command: dist:mac:intel
+            artifact: mac-x64
+          - os: windows-latest
+            command: dist:win
+            artifact: win-x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            platform/package-lock.json
+            desktop/package-lock.json
+            desktop/runtime-deps/package-lock.json
+      - run: npm run setup
+      - run: npm run scan:secrets
+      - run: npm test
+      - run: npm run test:desktop
+      - run: npm run ${{ matrix.command }}
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Smoke test installed runtime on macOS
+        if: runner.os == 'macOS'
+        run: node desktop/scripts/smoke-installed.mjs "desktop/release/${{ matrix.artifact }}/Vision Forte.app"
+      - name: Smoke test installed runtime on Windows
+        if: runner.os == 'Windows'
+        run: node desktop/scripts/smoke-installed.mjs desktop/release/win-unpacked
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Vision-Forte-${{ matrix.artifact }}
+          path: |
+            desktop/release/*.dmg
+            desktop/release/*.exe
+          if-no-files-found: error
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: installers
+          merge-multiple: true
+      - name: Publish installers
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          cd installers
+          sha256sum *.dmg *.exe > SHA256SUMS.txt
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" *.dmg *.exe SHA256SUMS.txt --clobber
+          else
+            gh release create "$RELEASE_TAG" *.dmg *.exe SHA256SUMS.txt --verify-tag --title "Vision Forte ${RELEASE_TAG}" --generate-notes
+          fi

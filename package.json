@@ -1,0 +1,18 @@
+{
+  "name": "vision-forte",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix platform start",
+    "electron": "npm --prefix desktop run platform",
+    "dev": "npm --prefix platform run dev",
+    "build": "npm --prefix platform run build",
+    "test": "npm --prefix platform test",
+    "setup": "npm --prefix platform ci && npm --prefix desktop ci",
+    "dist:mac": "npm --prefix desktop run dist:mac",
+    "dist:mac:intel": "npm --prefix desktop run dist:mac:intel",
+    "dist:win": "npm --prefix desktop run dist:win",
+    "scan:secrets": "node scripts/scan-secrets.mjs",
+    "test:desktop": "npm --prefix desktop test"
+  },
+  "version": "2.0.0"
+}

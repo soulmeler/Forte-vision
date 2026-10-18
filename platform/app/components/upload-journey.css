@@ -1,0 +1,20 @@
+.upload-journey{display:flex;align-items:flex-start;justify-content:space-between;margin:20px 0 18px;padding-top:20px;border-top:1px solid var(--border);isolation:isolate}
+.upload-journey-node{position:relative;display:flex;flex-direction:column;align-items:center;flex:0 0 76px;gap:4px;color:var(--muted);text-align:center}
+.upload-journey-symbol{position:relative;display:grid;place-items:center;width:37px;height:37px;border-radius:12px;background:var(--surface);border:1px solid var(--border);margin-bottom:4px;transition:color .25s,background .25s,border-color .25s;isolation:isolate}
+.upload-journey-symbol i{position:absolute;right:-3px;bottom:-2px;display:grid;place-items:center;width:15px;height:15px;background:var(--accent);color:var(--accent-text);border:2px solid var(--surface);border-radius:50%}
+.upload-journey-node strong{font-size:10px;font-weight:600;line-height:1.4;white-space:nowrap}
+.upload-journey-node small{font-size:9px;font-weight:400;line-height:1.4;white-space:nowrap}
+.upload-journey-node.is-current .upload-journey-symbol{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 5%,transparent)}
+.upload-journey-node.is-current .upload-journey-symbol:before{content:'';position:absolute;inset:-5px;border:1px solid var(--accent);border-radius:16px;animation:journey-pulse 2.4s ease-out infinite;z-index:-1}
+.upload-journey-node.is-current strong,.upload-journey-node.is-done strong{color:var(--accent)}
+.upload-journey-connector{position:relative;flex:1;height:1px;margin:18px -7px 0;background:var(--border);overflow:visible}
+.upload-journey-connector span{position:absolute;left:0;top:-1px;width:12px;height:3px;border-radius:6px;background:var(--accent);opacity:0;animation:journey-packet 2.2s linear infinite;animation-play-state:paused}
+.upload-journey-connector span:nth-child(2){animation-delay:.7s}.upload-journey-connector span:nth-child(3){animation-delay:1.4s}
+.is-transferring .first span,.is-verifying .second span{animation-play-state:running}
+.is-verifying .first{background:color-mix(in srgb,var(--accent) 35%,var(--border))}
+.is-verifying .upload-journey-node.is-current b{position:absolute;right:8px;bottom:8px;width:3px;height:3px;border-radius:50%;background:var(--accent);animation:journey-server 1.6s ease-in-out infinite}
+@keyframes journey-pulse{0%{opacity:.22;scale:.96}75%,100%{opacity:0;scale:1.22}}
+@keyframes journey-packet{0%{left:0;opacity:0;scale:.6}15%{opacity:.65;scale:1}85%{opacity:.65}100%{left:calc(100% - 12px);opacity:0;scale:.6}}
+@keyframes journey-server{50%{opacity:.25}}
+.upload-journey[data-reduced='true'] *,.upload-journey[data-reduced='true'] *:before{animation:none!important;transition:none!important}
+@media(prefers-reduced-motion:reduce){.upload-journey *,.upload-journey *:before{animation:none!important;transition:none!important}}

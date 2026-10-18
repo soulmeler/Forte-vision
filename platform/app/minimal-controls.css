@@ -1,0 +1,196 @@
+/* Final control treatment: flat surfaces, a clear primary action and a quiet
+   cursor response. Layout, theme swatches, focus rings and artwork stay intact. */
+:root :is(
+  .button, .lc-button, .nav-create, .icon-button, .nav-close,
+  .connection-chip, .time-jump, .player-play, .lc-text-button,
+  .lc-example-toggle, .sidebar-service, .sidebar-help, .sidebar-option
+) {
+  min-height: 44px;
+  border-radius: 8px;
+  background-image: none;
+  box-shadow: none;
+  text-shadow: none;
+  filter: none;
+  touch-action: manipulation;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+:root :is(.button, .lc-button, .nav-create) {
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--border);
+  background-color: transparent;
+  color: var(--text);
+}
+
+:root :is(.button, .lc-button, .nav-create):hover:not(:disabled):not([aria-disabled='true']) {
+  background-color: var(--surface-2);
+  border-color: var(--accent-muted);
+  box-shadow: none;
+  filter: none;
+}
+
+:root :is(.button-primary, .lc-button-primary, .nav-create) {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+:root :is(.button-primary, .lc-button-primary, .nav-create):hover:not(:disabled):not([aria-disabled='true']) {
+  background-color: color-mix(in srgb, var(--accent) 93%, var(--text));
+  border-color: transparent;
+  color: var(--accent-text);
+}
+
+:root :is(.button-primary, .lc-button-primary, .nav-create):disabled {
+  background-color: var(--surface-2);
+  border-color: var(--border);
+  color: var(--muted);
+  opacity: .65;
+}
+
+:root .button-danger {
+  background-color: var(--error);
+  border-color: var(--error);
+  color: var(--accent-text);
+}
+
+:root .button-danger:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--error) 93%, var(--text));
+  border-color: transparent;
+  color: var(--accent-text);
+}
+
+:root :is(.button-quiet, .lc-text-button) {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--accent);
+}
+
+:root :is(.button-quiet, .lc-text-button):hover:not(:disabled) {
+  background-color: var(--accent-soft);
+  border-color: transparent;
+  color: var(--accent);
+}
+
+:root .button-on-dark {
+  background-color: transparent;
+  border-color: rgb(255 255 255 / 28%);
+  color: #f0eff3;
+}
+
+:root .button-on-dark:hover:not(:disabled) {
+  background-color: rgb(255 255 255 / 7%);
+  border-color: rgb(255 255 255 / 42%);
+  color: #fff;
+}
+
+:root :is(.icon-button, .nav-close, .player-play) {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+:root :is(.icon-button, .nav-close):hover:not(:disabled) {
+  background-color: var(--surface-2);
+  color: var(--text);
+  box-shadow: none;
+}
+
+:root .danger-icon:hover:not(:disabled) {
+  background-color: var(--error-bg);
+  color: var(--error);
+}
+
+:root .player-play:hover:not(:disabled) {
+  background-color: rgb(255 255 255 / 7%);
+}
+
+:root :is(.connection-chip, .time-jump, .lc-example-toggle) {
+  border: 1px solid var(--border);
+  background-color: transparent;
+}
+
+:root :is(.connection-chip, .time-jump, .lc-example-toggle):hover:not(:disabled) {
+  border-color: var(--accent-muted);
+  background-color: var(--surface-2);
+}
+
+/* Selection remains distinct without raised or gradient-backed controls. */
+:root :is(.nav-item, .event-item, .library-item, .evidence-frame, .lc-step) {
+  border-radius: 9px;
+  background-image: none;
+  box-shadow: none;
+}
+
+:root .lc-step-indicator {
+  border-radius: 8px;
+}
+
+:root .lc-mini-switch {
+  border-radius: 9px;
+  background: transparent;
+  box-shadow: none;
+}
+
+:root .lc-mini-switch button {
+  min-height: 44px;
+  border-radius: 8px;
+  background-image: none;
+  box-shadow: none;
+}
+
+:root .lc-mini-switch button[aria-pressed='true'] {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+  box-shadow: none;
+}
+
+:root .result-tabs button {
+  min-height: 44px;
+  border-radius: 8px 8px 0 0;
+  background-image: none;
+  box-shadow: none;
+}
+
+/* Remove decorative hover shifts, retaining Motion's own inline press feedback. */
+:root .lc-button:hover:not(:disabled),
+:root .dropzone-copy .button-primary:hover > svg:last-child,
+:root .sidebar .nav-item:hover:not(:disabled) > svg:first-of-type {
+  transform: none;
+}
+
+:root .dropzone-copy .button-primary,
+:root .dropzone-copy .button-primary:hover {
+  box-shadow: none;
+}
+
+/* A light touch follows the cursor; no heavy pressed shadow or extra movement. */
+:root :is(button:not(.theme-swatch), summary)[data-pointer-feedback='true'] {
+  --vf-pointer-light: color-mix(in srgb, var(--accent, #a31551) 7%, transparent);
+  --vf-pointer-edge: color-mix(in srgb, var(--accent, #a31551) 14%, transparent);
+}
+
+:root button:is(.button-primary, .button-danger, .button-on-dark, .nav-create, .lc-button-primary)[data-pointer-feedback='true'] {
+  --vf-pointer-light: rgb(255 255 255 / 12%);
+  --vf-pointer-edge: rgb(255 255 255 / 22%);
+}
+
+:root :is(button:not(.theme-swatch), summary)[data-pointer-pressed='true']:not(:disabled):not([aria-disabled='true'])::before {
+  box-shadow: inset 0 0 0 1px var(--vf-pointer-edge);
+}
+
+@media (hover: none), (pointer: coarse) {
+  :root :is(button:not(.theme-swatch), summary)[data-pointer-feedback='true']::before {
+    background: color-mix(in srgb, var(--accent, #a31551) 5%, transparent);
+  }
+}
+
+@media (forced-colors: active) {
+  :root :is(button:not(.theme-swatch), summary)[data-pointer-feedback='true']::before {
+    background: none;
+    box-shadow: none;
+  }
+}

@@ -1,0 +1,27 @@
+.server-connection-route {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 550;
+}
+.server-connection-route svg { flex-shrink: 0; opacity: .65; }
+.server-connection-body .connection-rows { margin-bottom: 22px; }
+.server-connection-body .connection-rows > div { padding: 8px 0; }
+.server-connection-body .server-address { overflow-wrap: anywhere; max-width: 65%; }
+.server-connection-form input[type="url"] { font-size: 13px; }
+.server-connection-form .field-error { color: var(--error); margin: 0 0 16px; font-size: 13px; line-height: 1.6; }
+.server-connection-message { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; line-height: 1.6; margin: 0 0 16px; color: var(--text); }
+.server-connection-message svg { margin-top: 3px; flex-shrink: 0; color: var(--accent); }
+.server-connection-actions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-top: 12px; }
+@media (max-width: 460px) {
+  .server-connection-route { gap: 6px; padding: 12px; font-size: 11px; }
+  .server-connection-body .connection-rows > div { gap: 12px; }
+}

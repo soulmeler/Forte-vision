@@ -1,0 +1,77 @@
+/* Cursor light is a separate paint layer. Original backgrounds, ::after rings,
+   focus outlines, component children and Motion transforms remain intact. */
+:is(button,summary)[data-pointer-positioned='true'] {
+  position: relative;
+}
+
+:is(button,summary)[data-pointer-feedback='true'] {
+  --vf-pointer-light: color-mix(in srgb, var(--accent, #a31551) 18%, transparent);
+  --vf-pointer-edge: color-mix(in srgb, var(--accent, #a31551) 27%, transparent);
+}
+
+:is(button,summary)[data-pointer-feedback='true']::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    circle var(--vf-pointer-radius, 80px) at var(--vf-pointer-x, 50%) var(--vf-pointer-y, 50%),
+    var(--vf-pointer-light) 0%,
+    color-mix(in srgb, var(--vf-pointer-light) 45%, transparent) 35%,
+    transparent 78%
+  );
+  box-shadow: inset 0 0 0 1px transparent;
+  transition: opacity 140ms ease-out, box-shadow 140ms ease-out;
+}
+
+:is(button,summary)[data-pointer-hover='true']:not(:disabled):not([aria-disabled='true'])::before {
+  opacity: 1;
+}
+
+button:is(.button-primary, .button-danger, .button-on-dark, .nav-create, .lc-button-primary)[data-pointer-feedback='true'] {
+  --vf-pointer-light: rgb(255 255 255 / 26%);
+  --vf-pointer-edge: rgb(255 255 255 / 36%);
+}
+
+button.theme-swatch[data-pointer-feedback='true']::before {
+  border-radius: 50%;
+  inset: 3px;
+}
+
+:is(button,summary)[data-pointer-pressed='true']:not(:disabled):not([aria-disabled='true'])::before {
+  opacity: 1;
+  box-shadow: inset 0 0 0 1px var(--vf-pointer-edge), inset 0 2px 7px rgb(0 0 0 / 12%);
+  transition-duration: 65ms;
+}
+
+/* Touch receives press feedback only. Nothing follows a coarse pointer. */
+@media (hover: none), (pointer: coarse) {
+  :is(button,summary)[data-pointer-feedback='true']::before {
+    background: color-mix(in srgb, var(--accent, #a31551) 9%, transparent);
+  }
+}
+
+/* Reduced motion preserves instant state feedback without movement or fades. */
+@media (prefers-reduced-motion: reduce) {
+  :is(button,summary)[data-pointer-feedback='true']::before {
+    transition: none;
+  }
+}
+
+:root[data-motion='reduced'] :is(button,summary)[data-pointer-feedback='true']::before {
+  transition: none;
+}
+
+@media (forced-colors: active) {
+  :is(button,summary)[data-pointer-feedback='true']::before {
+    background: none;
+    box-shadow: none;
+  }
+  :is(button,summary)[data-pointer-pressed='true']:not(:disabled)::before {
+    outline: 1px solid ButtonText;
+    outline-offset: -3px;
+  }
+}
