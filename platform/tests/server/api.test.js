@@ -28,8 +28,18 @@ async function fixture(t, options = {}) {
   const request = (route, opts = {}) => fetch(base + '/api/v1' + route, { ...opts, headers: { 'X-API-Key': key, ...opts.headers } });
   const form = (name = 'sample.mov', bytes = clip) => { const body = new FormData(); body.set('file', new Blob([bytes], { type: 'video/quicktime' }), name); return body; };
   const upload = async (name = 'sample.mov', bytes = clip) => { const response = await request('/videos', { method: 'POST', body: form(name, bytes) }); assert.equal(response.status, 201, await response.clone().text()); return response.json(); };
-  t.after(async () => { await runtime.stop(); await fs.rm(dir, { recursive: true, force: true }); });
-  return { runtime, config, base, request, form, upload, dir };
+  const instances = [runtime];
+  const restart = async (overrides = {}) => {
+    const next = await startServer({ ...config, ...overrides });
+    instances.push(next); await next.model.initialization; return next;
+  };
+  // Close every reopened SQLite connection before deleting its directory.
+  // Windows locks open databases; after hooks run in registration order.
+  t.after(async () => {
+    for (const instance of instances) await instance.stop();
+    await fs.rm(dir, { recursive: true, force: true, maxRetries: 3 });
+  });
+  return { runtime, config, base, request, form, upload, dir, restart };
 }
 async function waitJob(request, id) {
   for (let attempt = 0; attempt < 100; attempt++) {
@@ -85,7 +95,7 @@ test('uploads persist without annotation data and the retired endpoint is unavai
   const listing = await (await f.request('/videos')).json();
   assert.deepEqual(listing.videos, [uploaded.video]);
   await f.runtime.stop();
-  const restarted = await startServer(f.config); t.after(() => restarted.stop());
+  const restarted = await f.restart();
   const response = await fetch(`http://127.0.0.1:${restarted.server.address().port}/api/v1/videos/${uploaded.video.id}`, { headers: { 'X-API-Key': key } });
   assert.deepEqual(await response.json(), { video: uploaded.video, latest_job: null });
 });
@@ -118,7 +128,7 @@ test('legacy annotation column migration preserves videos, completed jobs and fo
   legacy.prepare('UPDATE videos SET annotation_json=? WHERE id=?')
     .run(JSON.stringify({ description_raw: 'Historical annotation snapshot', timestamp_seconds: 1.5 }), uploaded.video.id);
   legacy.close();
-  const restarted = await startServer({ ...f.config, modelModule: null }); t.after(() => restarted.stop());
+  const restarted = await f.restart({ modelModule: null });
   const request = (route, options = {}) => fetch(`http://127.0.0.1:${restarted.server.address().port}/api/v1${route}`, { ...options, headers: { 'X-API-Key': key } });
   assert.equal(restarted.store.db.prepare('PRAGMA table_info(videos)').all().some((column) => column.name === 'annotation_json'), false);
   assert.deepEqual({ ...restarted.store.getVideo(uploaded.video.id) }, originalRow);
@@ -128,7 +138,7 @@ test('legacy annotation column migration preserves videos, completed jobs and fo
   assert.deepEqual(Buffer.from(await (await request(`/videos/${uploaded.video.id}/content`)).arrayBuffer()), clip);
   assert.equal((await request('/videos', { method: 'POST', body: f.form('after-migration.mov') })).status, 201);
   await restarted.stop();
-  const again = await startServer({ ...f.config, modelModule: null }); t.after(() => again.stop());
+  const again = await f.restart({ modelModule: null });
   assert.equal(again.store.db.prepare('SELECT COUNT(*) AS count FROM videos').get().count, 2);
   assert.equal(again.store.getJob(completed.job_id).status, 'done');
 });
@@ -298,7 +308,7 @@ test('restart recovers interrupted job metadata as failed', async (t) => {
   const f = await fixture(t), { video } = await f.upload(), id = randomUUID(), now = new Date().toISOString();
   f.runtime.store.db.prepare("INSERT INTO jobs (id,video_id,status,stage,created_at,updated_at) VALUES (?,?,'processing','analyzing',?,?)").run(id, video.id, now, now);
   await f.runtime.stop();
-  const restarted = await startServer(f.config); t.after(() => restarted.stop());
+  const restarted = await f.restart();
   assert.equal(restarted.store.getJob(id).status, 'failed'); assert.equal(restarted.store.getJob(id).error_code, 'SERVER_RESTARTED');
 });
 
@@ -317,7 +327,7 @@ test('video detail recovers only its latest persisted job in done, processing an
   f.runtime.store.db.prepare("INSERT INTO jobs (id,video_id,status,stage,created_at,updated_at,error_code,error_message) VALUES (?,?,'failed','failed',?,?,?,?)")
     .run(failedId, video.id, done.created_at, done.updated_at, 'MODEL_ERROR', 'Сохранённая ошибка модели.');
   await f.runtime.stop();
-  const restarted = await startServer({ ...f.config, modelModule: null }); t.after(() => restarted.stop());
+  const restarted = await f.restart({ modelModule: null });
   const response = await fetch(`http://127.0.0.1:${restarted.server.address().port}/api/v1/videos/${video.id}`, { headers: { 'X-API-Key': key } });
   const failed = (await response.json()).latest_job;
   assert.equal(failed.job_id, failedId); assert.equal(failed.status, 'failed'); assert.equal(failed.error.code, 'MODEL_ERROR'); assert.equal(failed.verdict, undefined);
