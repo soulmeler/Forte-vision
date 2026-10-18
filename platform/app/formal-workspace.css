@@ -45,3 +45,16 @@
 :root .dropzone-actions>.button{height:48px;min-height:48px;margin:0;padding:10px 12px;gap:8px;align-items:center;justify-content:center;font-size:13px;font-weight:600;line-height:20px;white-space:nowrap}
 .dropzone-copy .dropzone-actions>.button>svg{width:18px;height:18px;flex-shrink:0;margin:0}
 :root .dropzone-actions>.button-quiet{border:1px solid var(--accent-muted)}
+
+/* Human decisions remain visually separate from model findings. */
+.review-controls { margin-bottom: 24px; padding-bottom: 22px; border-bottom: 1px solid var(--border); }
+.review-controls-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 14px; }
+.review-controls-heading > strong { font-size: 15px; }
+.review-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.review-actions .button { width: 100%; min-height: 46px; padding: 10px 8px; text-align: center; justify-content: center; line-height: 1.4; }
+.review-actions .button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.review-controls > p { margin-top: 12px; font-size: 12px; line-height: 1.7; color: var(--muted); }
+.review-flag, .library-item > span:nth-child(2) > .review-flag { display: inline-flex; align-items: center; gap: 6px; width: fit-content; border-radius: 7px; padding: 5px 9px; font-size: 12px; line-height: 1.5; font-weight: 600; color: var(--accent); background: var(--accent-soft); }
+.review-flag svg { flex-shrink: 0; }
+.review-flag-safe { color: var(--success); }
+@media (max-width: 520px) { .review-actions { grid-template-columns: 1fr; } }

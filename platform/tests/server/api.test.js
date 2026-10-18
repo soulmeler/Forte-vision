@@ -346,3 +346,53 @@ test('result validator rejects fabricated evidence, nonfinite time and unsafe li
   assert.throws(() => validateResult({ ...result, violations: [{ ...result.violations[0], rule_refs: [{ title: 'bad', url: 'javascript:alert(1)' }] }] }), /HTTP/);
   assert.throws(() => validateResult({ ...result, violations: [{ ...result.violations[0], evidence_frames: [{ timestamp_sec: 1, image_base64: 'eHl6' }] }] }), /JPEG/);
 });
+
+test('human review persists independently of model output, survives restart and reaches history and Excel', async t => {
+  const f = await fixture(t, { mode: 'violation' });
+  const { video } = await f.upload('review.mov');
+  const submitted = await (await f.request(`/videos/${video.id}/analyze`, { method: 'POST' })).json();
+  const result = await waitJob(f.request, submitted.job_id);
+  const route = `/videos/${video.id}/review`;
+  const put = body => ({ method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  assert.equal((await fetch(f.base + '/api/v1' + route, put({ decision: 'safe', job_id: result.job_id }))).status, 401);
+  for (const body of [{ decision: 'unknown', job_id: result.job_id }, { decision: 'safe' }, { decision: 'safe', job_id: result.job_id, extra: true }]) {
+    assert.equal((await f.request(route, put(body))).status, 400);
+  }
+  const other = await f.upload('other.mov', Buffer.concat([clip, Buffer.from('other')]));
+  assert.equal((await f.request(`/videos/${other.video.id}/review`, put({ decision: 'safe', job_id: result.job_id }))).status, 409);
+  const batch = f.runtime.batches.create('review.zip', [{ original_name: video.original_name, video_id: video.id }]);
+  for (const decision of ['violation', 'safe', 'model_error']) {
+    const response = await f.request(route, put({ decision, job_id: result.job_id }));
+    assert.equal(response.status, 200);
+    const saved = (await response.json()).video.review;
+    assert.equal(saved.decision, decision); assert.equal(saved.job_id, result.job_id);
+    assert.ok(Number.isFinite(Date.parse(saved.reviewed_at)));
+    const history = await (await f.request('/videos')).json();
+    assert.deepEqual(history.videos.find(v => v.id === video.id).review, saved);
+  }
+  assert.deepEqual(await (await f.request(`/jobs/${result.job_id}`)).json(), result);
+  const batchResponse = await (await f.request(`/batches/${batch.id}`)).json();
+  assert.equal(batchResponse.batch.items[0].review.decision, 'model_error');
+  const ExcelJS = (await import('exceljs')).default;
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.load(Buffer.from(await (await f.request(`/batches/${batch.id}/report.xlsx`)).arrayBuffer()));
+  assert.equal(workbook.getWorksheet('Видеозаписи').getCell('K7').value, 'Ошибка модели');
+  assert.equal(workbook.getWorksheet('Видеозаписи').getCell('M7').value, result.job_id);
+  await f.runtime.stop();
+  const next = await f.restart();
+  const detail = await (await fetch(`http://127.0.0.1:${next.server.address().port}/api/v1/videos/${video.id}`, { headers: { 'X-API-Key': key } })).json();
+  assert.equal(detail.video.review.decision, 'model_error');
+  assert.deepEqual(detail.latest_job, result);
+});
+
+test('human review accepts uncertain results but rejects unfinished or clear results', async t => {
+  for (const mode of ['review', 'slow']) {
+    const f = await fixture(t, { mode });
+    const { video } = await f.upload();
+    const submitted = await (await f.request(`/videos/${video.id}/analyze`, { method: 'POST' })).json();
+    const save = () => f.request(`/videos/${video.id}/review`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ decision: 'safe', job_id: submitted.job_id }) });
+    if (mode === 'slow') assert.equal((await save()).status, 409);
+    await waitJob(f.request, submitted.job_id);
+    assert.equal((await save()).status, mode === 'review' ? 200 : 409);
+  }
+});

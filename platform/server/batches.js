@@ -47,6 +47,7 @@ export class BatchManager {
       const job = snapshot || (live ? compactJob(live) : null);
       return { id: item.id, original_name: item.original_name, video_id: item.video_id,
         status: item.status, job,
+        review: item.video_id ? JSON.parse(this.store.getVideo(item.video_id)?.review_json || 'null') : null,
         error: item.error_code ? { code: item.error_code, message: item.error_message } : job?.error || null };
     });
     const counts = { total: items.length, queued: 0, processing: 0, done: 0, failed: 0 };

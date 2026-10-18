@@ -1,6 +1,6 @@
 {
   "name": "vision-forte",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "private": true,
   "type": "module",
   "description": "Vision Forte — проверка кассовых операций через API сервера модели",

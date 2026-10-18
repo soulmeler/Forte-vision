@@ -112,6 +112,24 @@ export function createApp(overrides = {}) {
     const latest = store.db.prepare('SELECT * FROM jobs WHERE video_id=? ORDER BY created_at DESC, rowid DESC LIMIT 1').get(row.id);
     res.json({ video: videoDTO(row), latest_job: latest ? jobDTO(latest) : null });
   });
+  app.put('/api/v1/videos/:id/review', (req, res) => {
+    const row = videoFor(req.params.id), body = req.body;
+    if (!body || Array.isArray(body) || Object.keys(body).some(key => !['decision', 'job_id'].includes(key))
+      || !['violation', 'safe', 'model_error'].includes(body.decision) || typeof body.job_id !== 'string') {
+      throw new ApiError(400, 'INVALID_REVIEW', 'Выберите решение и результат проверки.');
+    }
+    const job = store.getJob(body.job_id);
+    if (!job || job.video_id !== row.id || job.status !== 'done'
+      || !['violation', 'review_required'].includes(JSON.parse(job.result_json || '{}').verdict)) {
+      throw new ApiError(409, 'REVIEW_NOT_AVAILABLE', 'Решение доступно для завершённой проверки с подозрительным результатом.');
+    }
+    if (store.videoInPendingBatch(row.id) || store.db.prepare("SELECT 1 FROM jobs WHERE video_id=? AND status='processing'").get(row.id)) {
+      throw new ApiError(409, 'VIDEO_BUSY', 'Дождитесь завершения текущей проверки.');
+    }
+    const review = { decision: body.decision, job_id: job.id, reviewed_at: new Date().toISOString() };
+    store.db.prepare('UPDATE videos SET review_json=? WHERE id=?').run(JSON.stringify(review), row.id);
+    res.json({ video: videoDTO(store.getVideo(row.id)) });
+  });
   app.delete('/api/v1/videos/:id', (req, res) => {
     const row = videoFor(req.params.id);
     if (store.videoInPendingBatch(row.id) || store.db.prepare("SELECT 1 FROM jobs WHERE video_id=? AND status='processing'").get(row.id)) throw new ApiError(409, 'VIDEO_BUSY', 'Видео находится в очереди или обрабатывается. Дождитесь завершения проверки перед удалением.');

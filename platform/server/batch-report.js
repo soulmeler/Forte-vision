@@ -2,6 +2,7 @@ import ExcelJS from 'exceljs';
 
 const COLORS = { accent: 'FFA31551', ink: 'FF29252F', muted: 'FF756B7C', tint: 'FFF8EFF3', line: 'FFE8E2EB' };
 const labels = { queued: 'В очереди', processing: 'Проверяется', failed: 'Ошибка', done: 'Проверено' };
+const reviewLabels = { violation: 'Нарушение', safe: 'Безопасно', model_error: 'Ошибка модели' };
 const verdicts = { violation: 'Признаки возможного нарушения', no_violation: 'Нарушение не обнаружено', review_required: 'Требуется ручная проверка' };
 // Explicit string cell values never become formulas or external hyperlinks.
 const text = value => String(value ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').slice(0, 32767);
@@ -60,7 +61,7 @@ export async function createBatchReport(batch) {
   const subtitle = `Архив: ${batch.original_name} · Сформировано: ${now.toISOString()} (UTC)`;
   const videos = setupSheet(book, 'Видеозаписи', [
     ['№', 6], ['Видеозапись', 32], ['Статус обработки', 22], ['Ответ модели', 34], ['Комментарий модели', 75],
-    ['Событий', 12], ['Ограничения проверки', 60], ['Ошибка', 52], ['Модель / версия', 36], ['ID видеозаписи', 39],
+    ['Событий', 12], ['Ограничения проверки', 60], ['Ошибка', 52], ['Модель / версия', 36], ['ID видеозаписи', 39], ['Решение сотрудника', 25], ['Дата решения (UTC)', 28], ['ID проверенного результата', 39],
   ], 'Vision Forte · Проверка видеозаписей', subtitle, note);
   const events = setupSheet(book, 'События', [
     ['№ видео', 10], ['Видеозапись', 32], ['Ответ модели', 34], ['Тип события', 30], ['Таймкод, с', 15],
@@ -74,7 +75,7 @@ export async function createBatchReport(batch) {
     const summary = completed ? job.summary || currentEvents.map(event => event.description).join('\n\n') || (job.verdict === 'no_violation' ? 'Модель не выявила признаков возможных нарушений.' : 'Проверьте исходную запись вручную.') : '';
     addRow(videos, [index + 1, item.original_name, labels[item.status] || item.status, verdict, summary,
       completed ? currentEvents.length : '', (job?.warnings || []).join('\n'), error ? `${error.code || ''}: ${error.message || ''}` : '',
-      [job?.model?.name, job?.model?.version].filter(Boolean).join(' · '), item.video_id || '']);
+      [job?.model?.name, job?.model?.version].filter(Boolean).join(' · '), item.video_id || '', reviewLabels[item.review?.decision] || '', item.review?.reviewed_at || '', item.review?.job_id || '']);
     currentEvents.forEach(event => {
       const row = addRow(events, [index + 1, item.original_name, verdict, event.type, event.timecode_sec ?? '', event.start_sec ?? '', event.end_sec ?? '',
         event.description, (event.rule_refs || []).map(ref => [ref.title, ref.section, ref.url, ref.verified ? 'Проверено' : 'Не подтверждено'].filter(Boolean).join(' · ')).join('\n')]);

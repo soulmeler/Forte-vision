@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Archive, ArrowUpRight, Check, CircleHelp, Clock3, Download, Film, FolderOpen, LoaderCircle, Play, PlugZap, RefreshCw, TriangleAlert, X } from 'lucide-react';
 import './batch-panel.css';
+import ReviewFlag from './ReviewFlag.jsx';
 
 const BATCH_STORAGE = 'vision-forte.batch.v1';
 const readSelected = () => { try { return localStorage.getItem(BATCH_STORAGE); } catch { return null; } };
@@ -150,6 +151,7 @@ export default function BatchPanel({ manager, selectedVideoId, modelReady, authe
           return <button key={item.id} type="button" className={`batch-file ${item.video_id === selectedVideoId ? 'selected' : ''}`} disabled={disabled || !item.video_id} onClick={() => onSelect(item.video_id)} aria-pressed={Boolean(item.video_id && item.video_id === selectedVideoId)}>
             <span className="batch-file-top"><span className="batch-file-number">{String(index + 1).padStart(2, '0')}</span><strong title={item.original_name}>{item.original_name}</strong>{item.video_id && <ArrowUpRight size={16}/>}</span>
             <span className={`batch-verdict batch-verdict-${presentation.tone}`}><Icon size={14} className={item.status === 'processing' ? 'spin' : ''}/>{presentation.label}</span>
+            <ReviewFlag review={item.review}/>
             <span className="batch-file-description">{presentation.description}</span>
             {presentation.events?.length > 1 && <span className="batch-file-hint">Событий: {presentation.events.length}. Откройте запись, чтобы увидеть все.</span>}
             {item.job?.warnings?.length > 0 && <span className="batch-file-warning">{item.job.warnings.join(' ')}</span>}

@@ -51,6 +51,9 @@ export function openStore(config) {
       db.exec('ROLLBACK'); db.close(); throw error;
     }
   }
+  if (!db.prepare('PRAGMA table_info(videos)').all().some(column => column.name === 'review_json')) {
+    db.exec('ALTER TABLE videos ADD COLUMN review_json TEXT');
+  }
   db.prepare("UPDATE jobs SET status='failed', stage='failed', error_code='SERVER_RESTARTED', error_message='Сервис был перезапущен. Запустите проверку повторно.', updated_at=? WHERE status='processing'").run(new Date().toISOString());
   db.prepare("UPDATE batches SET status='paused' WHERE status='processing'").run();
   // A killed importer must not leave partial batches or invisible stored media.
@@ -88,6 +91,7 @@ export function videoDTO(row) {
     mime_type: row.mime_type, sha256: row.sha256, created_at: row.created_at,
     duration_sec: row.duration_sec, width: row.width, height: row.height, codec: row.codec,
     has_audio: row.has_audio === null ? null : Boolean(row.has_audio),
+    review: row.review_json ? JSON.parse(row.review_json) : null,
     metadata_source: row.metadata_source, preview_url: `/api/v1/videos/${row.id}/content` };
 }
 export function jobDTO(row) {
