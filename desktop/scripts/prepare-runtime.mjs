@@ -24,7 +24,7 @@ function run(command, args, cwd, capture = false) {
 run(npm, ['run', 'build'], project);
 // This generated directory contains only the installed app's runtime, never the
 // developer's data, environment files, credentials, datasets, or model weights.
-await fs.rm(path.dirname(destination), { recursive: true, force: true });
+await fs.rm(path.dirname(destination), { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
 await fs.mkdir(destination, { recursive: true });
 for (const name of ['package.json', 'package-lock.json']) await fs.copyFile(path.join(desktop, 'runtime-deps', name), path.join(destination, name));
 run(npm, ['ci', '--omit=dev', '--ignore-scripts', '--no-audit', '--no-fund'], destination);
