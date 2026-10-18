@@ -287,7 +287,11 @@ test('shutdown terminates registered inference subprocesses even when the adapte
   await f.request(`/videos/${video.id}/analyze`, { method: 'POST' });
   let pid;
   for (let i = 0; i < 40; i++) {
-    try { pid = Number(await fs.readFile(path.join(f.dir, 'child.pid'), 'utf8')); break; } catch { await new Promise((resolve) => setTimeout(resolve, 10)); }
+    try {
+      const candidate = Number(await fs.readFile(path.join(f.dir, 'child.pid'), 'utf8'));
+      if (Number.isSafeInteger(candidate) && candidate > 1) { pid = candidate; break; }
+    } catch { /* The fixture may not have created its PID file yet. */ }
+    await new Promise((resolve) => setTimeout(resolve, 10));
   }
   assert.ok(pid); await f.runtime.stop();
   for (let i = 0; i < 40; i++) {
