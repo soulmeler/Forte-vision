@@ -14,7 +14,7 @@ async function fixture(t, config = {}) {
   const runtime = await startServer({ apiKey: platformKey, host: '127.0.0.1', port: 0, localAutoSession: false, publicOrigin: null,
     modelModule: null, dataDir: path.join(dir, 'data'), regulatoryPath: path.join(dir, 'regulatory.json'),
     publicDir: path.join(dir, 'dist'), ffprobePath: false,
-    remotePollIntervalMs: 10, remoteRequestTimeoutMs: 100, remoteHealthIntervalMs: 20000, ...config });
+    remotePollIntervalMs: 10, remoteRequestTimeoutMs: 2000, remoteHealthIntervalMs: 20000, ...config });
   const base = `http://127.0.0.1:${runtime.server.address().port}/api/v1`;
   const request = (route, options = {}) => fetch(base + route, { ...options, headers: { 'X-API-Key': platformKey, ...options.headers } });
   const json = (method, body) => ({ method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -82,7 +82,9 @@ test('team raw-video endpoint uses Bearer, origin health and raw bytes with a sy
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   t.after(async () => { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); });
   const f = await fixture(t), url = `http://127.0.0.1:${server.address().port}/v1/analyze-video`;
-  const connected = await (await f.connect(url)).json();
+  const connection = await f.connect(url);
+  assert.equal(connection.status, 200, await connection.clone().text());
+  const connected = await connection.json();
   assert.equal(connected.model.name, 'Qwen3-VL-4B-Instruct'); assert.equal(connected.model.version, 'checkpoint-96');
   assert.equal(connected.connection.authentication, 'bearer'); assert.equal(connected.model.ready, true);
   const video = await f.upload();
@@ -167,7 +169,7 @@ test('overlapping connection mutations are locked and unreachable hosts fail saf
 });
 
 test('remote timeout and background health refresh expose unavailable readiness honestly', async (t) => {
-  const f = await fixture(t, { remoteHealthIntervalMs: 25 }), r = await remote(t, { ready: false });
+  const f = await fixture(t, { remoteHealthIntervalMs: 25, remoteRequestTimeoutMs: 100 }), r = await remote(t, { ready: false });
   const initial = await (await f.connect(r.url)).json(); assert.equal(initial.connection.configured, true); assert.equal(initial.model.ready, false);
   r.state.ready = true;
   for (let i = 0; i < 20 && !f.runtime.model.state.ready; i++) await new Promise((resolve) => setTimeout(resolve, 10));
