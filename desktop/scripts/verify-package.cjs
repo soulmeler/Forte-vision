@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const { execFileSync } = require('node:child_process');
 module.exports = async ({ appOutDir, electronPlatformName, packager, arch }) => {
   const resources = electronPlatformName === 'darwin'
     ? path.join(appOutDir, packager.appInfo.productFilename + '.app', 'Contents/Resources')
@@ -14,4 +15,13 @@ module.exports = async ({ appOutDir, electronPlatformName, packager, arch }) => 
     if (!fs.existsSync(path.join(root, name))) throw Error('Missing installed runtime resource: ' + name);
   }
   if (fs.existsSync(path.join(root, '.env'))) throw Error('Private .env must never be included in installers');
+  if (electronPlatformName === 'darwin') {
+    const bundle = path.dirname(path.dirname(resources));
+    // Finder metadata invalidates codesign. Remove only these two metadata
+    // attributes from newly built resources; quarantine is deliberately kept.
+    for (const attribute of ['com.apple.FinderInfo', 'com.apple.ResourceFork']) {
+      try { execFileSync('/usr/bin/xattr', ['-r', '-d', attribute, bundle], { stdio: 'pipe' }); }
+      catch (error) { if (!String(error.stderr).includes('No such xattr')) throw error; }
+    }
+  }
 };

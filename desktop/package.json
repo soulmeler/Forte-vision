@@ -1,6 +1,6 @@
 {
   "name": "vision-forte",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "type": "module",
   "description": "Vision Forte — проверка кассовых операций через API сервера модели",
@@ -55,9 +55,14 @@
     "artifactName": "Vision-Forte-${version}-${os}-${arch}.${ext}",
     "mac": {
       "category": "public.app-category.productivity",
-      "identity": null,
+      "identity": "-",
       "target": [
         "dmg"
+      ],
+      "hardenedRuntime": false,
+      "binaries": [
+        "Contents/Resources/platform/bin/ffmpeg",
+        "Contents/Resources/platform/bin/ffprobe"
       ]
     },
     "dmg": {
@@ -85,7 +90,8 @@
         "repo": "Forte-vision"
       }
     ],
-    "afterPack": "scripts/verify-package.cjs"
+    "afterPack": "scripts/verify-package.cjs",
+    "afterSign": "scripts/verify-signature.cjs"
   },
   "author": "Vision Forte team",
   "repository": {

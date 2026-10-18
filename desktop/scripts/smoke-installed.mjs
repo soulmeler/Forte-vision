@@ -9,6 +9,7 @@ const bundle = path.resolve(process.argv[2] || 'desktop/release/mac-arm64/Vision
 const mac = bundle.endsWith('.app');
 const resources = path.join(bundle, mac ? 'Contents/Resources' : 'resources');
 const executable = path.join(bundle, mac ? 'Contents/MacOS/Vision Forte' : 'Vision Forte.exe');
+if (mac) execFileSync('codesign', ['--verify', '--deep', '--strict', bundle], { stdio: 'inherit' });
 const data = await fs.mkdtemp(path.join(os.tmpdir(), 'vision-installer-smoke-'));
 const apiKey = randomBytes(32).toString('hex');
 const child = spawn(executable, [path.join(resources, 'app.asar/electron/runtime.cjs')], {
